@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -13,7 +13,7 @@ type Message = {
   created_at: string;
 };
 
-export default function ChatPage() {
+function ChatContent() {
   const searchParams = useSearchParams();
   const receiverId = searchParams.get("id");
 
@@ -21,7 +21,6 @@ export default function ChatPage() {
   const [userRole, setUserRole] = useState("");
   const [hasUnlock, setHasUnlock] = useState(false);
   const [checkingUnlock, setCheckingUnlock] = useState(true);
-
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState("");
 
@@ -36,12 +35,7 @@ export default function ChatPage() {
       )
       .order("created_at", { ascending: true });
 
-    if (error) {
-      console.error(error.message);
-      return;
-    }
-
-    setMessages(data || []);
+    if (!error) setMessages(data || []);
   }
 
   async function sendMessage(e: React.FormEvent) {
@@ -94,7 +88,7 @@ export default function ChatPage() {
 
       const { data: unlockData } = await supabase
         .from("paid_unlocks")
-        .select("*")
+        .select("id")
         .eq("user_id", userData.user.id)
         .eq("status", "paid")
         .maybeSingle();
@@ -119,7 +113,7 @@ export default function ChatPage() {
   if (checkingUnlock) {
     return (
       <main className="min-h-screen bg-black p-6 text-white">
-        <p>Loading chat...</p>
+        Loading chat...
       </main>
     );
   }
@@ -128,11 +122,7 @@ export default function ChatPage() {
     return (
       <main className="min-h-screen bg-black p-6 text-white">
         <div className="mx-auto max-w-3xl">
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="text-blue-400"
-          >
+          <button onClick={() => window.history.back()} className="text-blue-400">
             ← Back
           </button>
 
@@ -143,16 +133,9 @@ export default function ChatPage() {
               Recruiter se chat karne ke liye WorkMitra Plus unlock karo.
             </p>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-5">
-              <p className="text-2xl font-black text-yellow-400">₹50 Only</p>
-              <p className="mt-2 text-gray-400">
-                Chat + full job details + exact address unlock.
-              </p>
-            </div>
-
             <Link
               href="/student/unlock"
-              className="mt-8 inline-block rounded-xl bg-yellow-500 px-6 py-3 font-bold text-black hover:bg-yellow-400"
+              className="mt-8 inline-block rounded-xl bg-yellow-500 px-6 py-3 font-bold text-black"
             >
               Pay ₹50 & Unlock
             </Link>
@@ -165,32 +148,23 @@ export default function ChatPage() {
   return (
     <main className="min-h-screen bg-black p-6 text-white">
       <div className="mx-auto max-w-3xl">
-        <button
-          type="button"
-          onClick={() => window.history.back()}
-          className="text-blue-400"
-        >
+        <button onClick={() => window.history.back()} className="text-blue-400">
           ← Back
         </button>
 
         <h1 className="mt-8 text-4xl font-black">Chat</h1>
 
         <div className="mt-8 h-[500px] overflow-y-auto rounded-3xl border border-white/10 bg-white/5 p-4">
-          {messages.length === 0 && (
-            <p className="text-gray-400">No messages yet.</p>
-          )}
+          {messages.length === 0 && <p className="text-gray-400">No messages yet.</p>}
 
           {messages.map((msg) => (
             <div
               key={msg.id}
               className={`mb-4 max-w-[80%] rounded-2xl p-4 ${
-                msg.sender_id === currentUserId
-                  ? "ml-auto bg-blue-600"
-                  : "bg-white/10"
+                msg.sender_id === currentUserId ? "ml-auto bg-blue-600" : "bg-white/10"
               }`}
             >
               <p>{msg.message}</p>
-
               <p className="mt-2 text-xs text-gray-300">
                 {new Date(msg.created_at).toLocaleString()}
               </p>
@@ -212,5 +186,19 @@ export default function ChatPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-black p-6 text-white">
+          Loading chat...
+        </main>
+      }
+    >
+      <ChatContent />
+    </Suspense>
   );
 }
