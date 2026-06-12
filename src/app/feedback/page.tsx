@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function FeedbackPage() {
+function FeedbackContent() {
   const searchParams = useSearchParams();
 
   const toUserId = searchParams.get("user") || "";
@@ -133,5 +133,19 @@ export default function FeedbackPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function FeedbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-black p-6 text-white">
+          Loading feedback...
+        </main>
+      }
+    >
+      <FeedbackContent />
+    </Suspense>
   );
 }
