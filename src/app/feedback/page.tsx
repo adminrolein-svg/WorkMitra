@@ -1,26 +1,33 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-function FeedbackContent() {
-  const searchParams = useSearchParams();
+export default function FeedbackPage() {
+  const [toUserId, setToUserId] = useState("");
+  const [reviewForRole, setReviewForRole] = useState<"student" | "employer">("student");
+  const [applicationId, setApplicationId] = useState("");
 
-  const toUserId = searchParams.get("user") || "";
-  const roleParam = searchParams.get("role") || "jobseeker";
-  const applicationId = searchParams.get("app") || "";
+  const [loading, setLoading] = useState(false);
+  const [ratings, setRatings] = useState([5, 5, 5, 5, 5]);
+  const [feedback, setFeedback] = useState("");
 
-  const reviewForRole = roleParam === "recruiter" ? "employer" : "student";
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    const user = params.get("user") || "";
+    const role = params.get("role") || "jobseeker";
+    const app = params.get("app") || "";
+
+    setToUserId(user);
+    setApplicationId(app);
+    setReviewForRole(role === "recruiter" ? "employer" : "student");
+  }, []);
 
   const labels =
     reviewForRole === "student"
       ? ["Punctuality", "Communication", "Work Efficiency", "Discipline", "Overall Behaviour"]
       : ["Payment Clarity", "Work Environment", "Communication", "Professionalism", "Overall Experience"];
-
-  const [loading, setLoading] = useState(false);
-  const [ratings, setRatings] = useState([5, 5, 5, 5, 5]);
-  const [feedback, setFeedback] = useState("");
 
   function updateRating(index: number, value: number) {
     const copy = [...ratings];
@@ -133,19 +140,5 @@ function FeedbackContent() {
         </div>
       </div>
     </main>
-  );
-}
-
-export default function FeedbackPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen bg-black p-6 text-white">
-          Loading feedback...
-        </main>
-      }
-    >
-      <FeedbackContent />
-    </Suspense>
   );
 }

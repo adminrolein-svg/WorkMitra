@@ -1,8 +1,7 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 type Message = {
@@ -13,10 +12,8 @@ type Message = {
   created_at: string;
 };
 
-function ChatContent() {
-  const searchParams = useSearchParams();
-  const receiverId = searchParams.get("id");
-
+export default function ChatPage() {
+  const [receiverId, setReceiverId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState("");
   const [userRole, setUserRole] = useState("");
   const [hasUnlock, setHasUnlock] = useState(false);
@@ -24,14 +21,17 @@ function ChatContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState("");
 
-  async function fetchMessages(userId: string) {
-    if (!receiverId) return;
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setReceiverId(params.get("id"));
+  }, []);
 
+  async function fetchMessages(userId: string, receiver: string) {
     const { data, error } = await supabase
       .from("messages")
       .select("*")
       .or(
-        `and(sender_id.eq.${userId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${userId})`
+        `and(sender_id.eq.${userId},receiver_id.eq.${receiver}),and(sender_id.eq.${receiver},receiver_id.eq.${userId})`
       )
       .order("created_at", { ascending: true });
 
@@ -48,9 +48,11 @@ function ChatContent() {
 
     if (!message.trim() || !receiverId || !currentUserId) return;
 
+    const receiver = receiverId;
+
     const { error } = await supabase.from("messages").insert({
       sender_id: currentUserId,
-      receiver_id: receiverId,
+      receiver_id: receiver,
       message,
     });
 
@@ -60,10 +62,13 @@ function ChatContent() {
     }
 
     setMessage("");
-    fetchMessages(currentUserId);
+    fetchMessages(currentUserId, receiver);
   }
 
   useEffect(() => {
+    if (!receiverId) return;
+
+    const receiver = receiverId;
     let interval: NodeJS.Timeout;
 
     async function init() {
@@ -75,12 +80,13 @@ function ChatContent() {
         return;
       }
 
-      setCurrentUserId(userData.user.id);
+      const userId = userData.user.id;
+      setCurrentUserId(userId);
 
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
-        .eq("id", userData.user.id)
+        .eq("id", userId)
         .maybeSingle();
 
       const role = profile?.role || "";
@@ -89,17 +95,17 @@ function ChatContent() {
       const { data: unlockData } = await supabase
         .from("paid_unlocks")
         .select("id")
-        .eq("user_id", userData.user.id)
+        .eq("user_id", userId)
         .eq("status", "paid")
         .maybeSingle();
 
       setHasUnlock(!!unlockData);
       setCheckingUnlock(false);
 
-      await fetchMessages(userData.user.id);
+      await fetchMessages(userId, receiver);
 
       interval = setInterval(() => {
-        fetchMessages(userData.user!.id);
+        fetchMessages(userId, receiver);
       }, 2000);
     }
 
@@ -186,19 +192,5 @@ function ChatContent() {
         </form>
       </div>
     </main>
-  );
-}
-
-export default function ChatPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen bg-black p-6 text-white">
-          Loading chat...
-        </main>
-      }
-    >
-      <ChatContent />
-    </Suspense>
   );
 }

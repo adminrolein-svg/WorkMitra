@@ -1,14 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-function EditJobContent() {
+export default function EditJobPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const jobId = searchParams.get("id");
+  const [jobId, setJobId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -26,11 +25,13 @@ function EditJobContent() {
   });
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setJobId(params.get("id"));
+  }, []);
+
+  useEffect(() => {
     async function fetchJob() {
-      if (!jobId) {
-        router.push("/employer/jobs");
-        return;
-      }
+      if (!jobId) return;
 
       const { data, error } = await supabase
         .from("jobs")
@@ -60,6 +61,16 @@ function EditJobContent() {
     }
 
     fetchJob();
+  }, [jobId, router]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!jobId) {
+        router.push("/employer/jobs");
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, [jobId, router]);
 
   function handleChange(
@@ -179,19 +190,5 @@ function EditJobContent() {
         </form>
       </div>
     </main>
-  );
-}
-
-export default function EditJobPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen bg-black p-6 text-white">
-          Loading...
-        </main>
-      }
-    >
-      <EditJobContent />
-    </Suspense>
   );
 }
