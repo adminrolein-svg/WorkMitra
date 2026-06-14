@@ -1,14 +1,13 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-function StudentApplyForm() {
+export default function StudentApplyPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const jobId = searchParams.get("id");
+  const [jobId, setJobId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -25,6 +24,11 @@ function StudentApplyForm() {
 
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setJobId(params.get("id"));
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<
@@ -135,15 +139,47 @@ function StudentApplyForm() {
         </p>
 
         <form onSubmit={handleApply} className="mt-8 space-y-4">
-          <input name="full_name" placeholder="Full Name *" value={form.full_name} onChange={handleChange} required className="w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <input
+            name="full_name"
+            placeholder="Full Name *"
+            value={form.full_name}
+            onChange={handleChange}
+            required
+            className="w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
-          <input name="contact_number" placeholder="Contact Number *" value={form.contact_number} onChange={handleChange} required className="w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <input
+            name="contact_number"
+            placeholder="Contact Number *"
+            value={form.contact_number}
+            onChange={handleChange}
+            required
+            className="w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
-          <textarea name="address" placeholder="Address *" value={form.address} onChange={handleChange} required className="min-h-24 w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <textarea
+            name="address"
+            placeholder="Address *"
+            value={form.address}
+            onChange={handleChange}
+            required
+            className="min-h-24 w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
-          <input name="availability" placeholder="Availability e.g. 4 hours daily, weekends, evening" value={form.availability} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <input
+            name="availability"
+            placeholder="Availability e.g. 4 hours daily, weekends, evening"
+            value={form.availability}
+            onChange={handleChange}
+            className="w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
-          <select name="preferred_shift" value={form.preferred_shift} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-black p-3">
+          <select
+            name="preferred_shift"
+            value={form.preferred_shift}
+            onChange={handleChange}
+            className="w-full rounded-xl border border-white/10 bg-black p-3"
+          >
             <option>Flexible</option>
             <option>Morning</option>
             <option>Afternoon</option>
@@ -152,27 +188,63 @@ function StudentApplyForm() {
             <option>Weekend Only</option>
           </select>
 
-          <textarea name="experience" placeholder="Experience e.g. Fresher, 6 months shop work, event work" value={form.experience} onChange={handleChange} className="min-h-24 w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <textarea
+            name="experience"
+            placeholder="Experience e.g. Fresher, 6 months shop work, event work"
+            value={form.experience}
+            onChange={handleChange}
+            className="min-h-24 w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
-          <input name="college_name" placeholder="College Name (optional)" value={form.college_name} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <input
+            name="college_name"
+            placeholder="College Name (optional)"
+            value={form.college_name}
+            onChange={handleChange}
+            className="w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
-          <textarea name="skills" placeholder="Skills e.g. communication, sales, Excel, cashier" value={form.skills} onChange={handleChange} className="min-h-24 w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <textarea
+            name="skills"
+            placeholder="Skills e.g. communication, sales, Excel, cashier"
+            value={form.skills}
+            onChange={handleChange}
+            className="min-h-24 w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
-          <input name="portfolio_url" placeholder="Portfolio URL (optional)" value={form.portfolio_url} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-white/5 p-3" />
+          <input
+            name="portfolio_url"
+            placeholder="Portfolio URL (optional)"
+            value={form.portfolio_url}
+            onChange={handleChange}
+            className="w-full rounded-xl border border-white/10 bg-white/5 p-3"
+          />
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <label className="block text-sm font-bold text-gray-300">
               Do you want to upload a resume? (Optional)
             </label>
 
-            <select name="has_resume" value={form.has_resume} onChange={handleChange} className="mt-3 w-full rounded-xl border border-white/10 bg-black p-3">
+            <select
+              name="has_resume"
+              value={form.has_resume}
+              onChange={handleChange}
+              className="mt-3 w-full rounded-xl border border-white/10 bg-black p-3"
+            >
               <option value="No">No, continue without resume</option>
               <option value="Yes">Yes, upload PDF resume</option>
             </select>
 
             {form.has_resume === "Yes" && (
               <div className="mt-4">
-                <input type="file" accept="application/pdf" onChange={(e) => setResumeFile(e.target.files ? e.target.files[0] : null)} className="w-full rounded-xl border border-white/10 bg-black p-3" />
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) =>
+                    setResumeFile(e.target.files ? e.target.files[0] : null)
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-black p-3"
+                />
 
                 {resumeFile && (
                   <p className="mt-2 text-sm text-green-400">
@@ -183,19 +255,15 @@ function StudentApplyForm() {
             )}
           </div>
 
-          <button type="submit" disabled={loading} className="w-full rounded-xl bg-blue-600 py-3 font-bold hover:bg-blue-700 disabled:opacity-60">
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-blue-600 py-3 font-bold hover:bg-blue-700 disabled:opacity-60"
+          >
             {loading ? "Submitting..." : "Submit Application"}
           </button>
         </form>
       </div>
     </main>
-  );
-}
-
-export default function StudentApplyPage() {
-  return (
-    <Suspense fallback={<main className="min-h-screen bg-black p-6 text-white">Loading...</main>}>
-      <StudentApplyForm />
-    </Suspense>
   );
 }
