@@ -104,6 +104,7 @@ function getAiMatch(app: Application) {
 export default function ApplicantsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const [autoShortlisting, setAutoShortlisting] = useState(false);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -163,6 +164,63 @@ export default function ApplicantsPage() {
     fetchApplications();
   }
 
+  async function autoShortlistTopCandidates() {
+    if (applications.length === 0) {
+      alert("No applicants found");
+      return;
+    }
+
+    const confirmShortlist = confirm(
+      "AI top 5 candidates ko automatically Shortlist kar de?"
+    );
+
+    if (!confirmShortlist) return;
+
+    setAutoShortlisting(true);
+
+    const topCandidates = [...applications]
+      .filter(
+        (app) =>
+          app.status !== "Accepted" &&
+          app.status !== "Rejected" &&
+          app.status !== "Shortlisted"
+      )
+      .sort((a, b) => getAiMatch(b).score - getAiMatch(a).score)
+      .slice(0, 5);
+
+    if (topCandidates.length === 0) {
+      alert("No eligible candidates for auto-shortlist");
+      setAutoShortlisting(false);
+      return;
+    }
+
+    const ids = topCandidates.map((app) => app.id);
+
+    const { error } = await supabase
+      .from("applications")
+      .update({ status: "Shortlisted" })
+      .in("id", ids);
+
+    if (error) {
+      alert(error.message);
+      setAutoShortlisting(false);
+      return;
+    }
+
+    await supabase.from("notifications").insert(
+      topCandidates.map((app) => ({
+        user_id: app.student_id,
+        title: "Application Shortlisted",
+        message: "Your application has been shortlisted by AI ranking.",
+        type: "Shortlisted",
+      }))
+    );
+
+    alert(`AI ne ${topCandidates.length} candidates shortlist kar diye`);
+    setAutoShortlisting(false);
+    fetchApplications();
+  }
+
   const filteredApplications = useMemo(() => {
     return applications
       .filter((app) => {
@@ -205,12 +263,23 @@ export default function ApplicantsPage() {
           ← Back to Dashboard
         </Link>
 
-        <h1 className="mt-8 text-4xl font-black">Job Applicants</h1>
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-black">Job Applicants</h1>
+            <p className="mt-2 text-gray-400">
+              AI Match Score ke basis par best candidates automatically top par
+              dikh rahe hain.
+            </p>
+          </div>
 
-        <p className="mt-2 text-gray-400">
-          AI Match Score ke basis par best candidates automatically top par
-          dikh rahe hain.
-        </p>
+          <button
+            onClick={autoShortlistTopCandidates}
+            disabled={autoShortlisting || loading}
+            className="rounded-xl bg-green-600 px-5 py-3 font-bold disabled:opacity-50"
+          >
+            {autoShortlisting ? "Shortlisting..." : "🤖 AI Auto Shortlist Top 5"}
+          </button>
+        </div>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           <input
