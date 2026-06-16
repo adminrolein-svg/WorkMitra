@@ -68,6 +68,7 @@ function getAiMatch(app: Application) {
   if (app.has_resume === "Yes") score += 8;
   if (app.experience && app.experience.length > 5) score += 8;
   if (app.skills && app.skills.length > 5) score += 10;
+
   if (
     job?.job_location &&
     app.address &&
@@ -127,7 +128,14 @@ export default function ApplicantsPage() {
     if (error) {
       alert(error.message);
     } else {
-      setApplications((data || []) as Application[]);
+      const normalizedApplications = (data || []).map((app: any) => ({
+        ...app,
+        jobs: Array.isArray(app.jobs)
+          ? app.jobs[0] || null
+          : app.jobs || null,
+      }));
+
+      setApplications(normalizedApplications);
     }
 
     setLoading(false);
@@ -156,31 +164,34 @@ export default function ApplicantsPage() {
   }
 
   const filteredApplications = useMemo(() => {
-    return applications.filter((app) => {
-      const ai = getAiMatch(app);
+    return applications
+      .filter((app) => {
+        const ai = getAiMatch(app);
 
-      const text = `
-        ${app.full_name}
-        ${app.contact_number}
-        ${app.address}
-        ${app.college_name || ""}
-        ${app.skills || ""}
-        ${app.experience || ""}
-        ${app.availability || ""}
-        ${app.preferred_shift || ""}
-        ${app.status}
-        ${app.jobs?.job_position || ""}
-        ${app.jobs?.required_skills || ""}
-        ${ai.label}
-        ${ai.score}
-      `.toLowerCase();
+        const text = `
+          ${app.full_name}
+          ${app.contact_number}
+          ${app.address}
+          ${app.college_name || ""}
+          ${app.skills || ""}
+          ${app.experience || ""}
+          ${app.availability || ""}
+          ${app.preferred_shift || ""}
+          ${app.status}
+          ${app.jobs?.job_position || ""}
+          ${app.jobs?.required_skills || ""}
+          ${ai.label}
+          ${ai.score}
+        `.toLowerCase();
 
-      const matchesSearch = text.includes(search.toLowerCase());
-      const matchesStatus =
-        statusFilter === "All" || app.status === statusFilter;
+        const matchesSearch = text.includes(search.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus =
+          statusFilter === "All" || app.status === statusFilter;
+
+        return matchesSearch && matchesStatus;
+      })
+      .sort((a, b) => getAiMatch(b).score - getAiMatch(a).score);
   }, [applications, search, statusFilter]);
 
   useEffect(() => {
@@ -197,7 +208,8 @@ export default function ApplicantsPage() {
         <h1 className="mt-8 text-4xl font-black">Job Applicants</h1>
 
         <p className="mt-2 text-gray-400">
-          AI Match Score ke saath applicants ko smartly shortlist karo.
+          AI Match Score ke basis par best candidates automatically top par
+          dikh rahe hain.
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -245,7 +257,7 @@ export default function ApplicantsPage() {
         )}
 
         <div className="mt-8 grid gap-4">
-          {filteredApplications.map((app) => {
+          {filteredApplications.map((app, index) => {
             const ai = getAiMatch(app);
 
             return (
@@ -255,7 +267,12 @@ export default function ApplicantsPage() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
+                    <div className="mb-3 inline-block rounded-full bg-yellow-500 px-4 py-1 text-sm font-black text-black">
+                      AI Rank #{index + 1}
+                    </div>
+
                     <h2 className="text-2xl font-bold">{app.full_name}</h2>
+
                     <p className="mt-1 text-sm text-gray-400">
                       Applied for: {app.jobs?.job_position || "Job not linked"}
                     </p>
