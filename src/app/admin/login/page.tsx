@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 export default function AdminLoginPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("adminrole.in@gmail.com");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -16,8 +16,10 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
 
+    const cleanEmail = email.trim().toLowerCase();
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: cleanEmail,
       password,
     });
 
@@ -27,15 +29,29 @@ export default function AdminLoginPage() {
       return;
     }
 
-    const { data: adminData } = await supabase
+    if (!data.user) {
+      alert("Login failed");
+      setLoading(false);
+      return;
+    }
+
+    const { data: adminData, error: adminError } = await supabase
       .from("admins")
       .select("*")
       .eq("user_id", data.user.id)
       .maybeSingle();
 
+    if (adminError) {
+      alert(adminError.message);
+      setLoading(false);
+      return;
+    }
+
     if (!adminData) {
       await supabase.auth.signOut();
-      alert("You are not authorized as admin.");
+      alert(
+        `You are not authorized as admin.\n\nLogged user id:\n${data.user.id}\n\nAdd this user_id in admins table.`
+      );
       setLoading(false);
       return;
     }
@@ -73,7 +89,7 @@ export default function AdminLoginPage() {
 
           <button
             disabled={loading}
-            className="w-full rounded-xl bg-blue-600 py-3 font-bold hover:bg-blue-700"
+            className="w-full rounded-xl bg-blue-600 py-3 font-bold hover:bg-blue-700 disabled:opacity-60"
           >
             {loading ? "Checking..." : "Login as Admin"}
           </button>

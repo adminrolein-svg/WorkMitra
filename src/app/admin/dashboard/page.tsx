@@ -42,9 +42,9 @@ export default function AdminDashboardPage() {
     }
 
     const { data: adminData } = await supabase
-      .from("admin_users")
+      .from("admins")
       .select("*")
-      .eq("id", userData.user.id)
+      .eq("user_id", userData.user.id)
       .maybeSingle();
 
     if (!adminData) {
@@ -66,19 +66,11 @@ export default function AdminDashboardPage() {
     ] = await Promise.all([
       supabase.from("profiles").select("*", { count: "exact", head: true }),
       supabase.from("jobs").select("*", { count: "exact", head: true }),
-      supabase
-        .from("jobs")
-        .select("*", { count: "exact", head: true })
-        .eq("approval_status", "pending"),
-      supabase
-        .from("jobs")
-        .select("*", { count: "exact", head: true })
-        .eq("approval_status", "approved"),
+      supabase.from("jobs").select("*", { count: "exact", head: true }).eq("approval_status", "pending"),
+      supabase.from("jobs").select("*", { count: "exact", head: true }).eq("approval_status", "approved"),
       supabase.from("applications").select("*", { count: "exact", head: true }),
       supabase.from("messages").select("*", { count: "exact", head: true }),
-      supabase
-        .from("company_profiles")
-        .select("*", { count: "exact", head: true }),
+      supabase.from("company_profiles").select("*", { count: "exact", head: true }),
     ]);
 
     setStats({
@@ -187,44 +179,24 @@ export default function AdminDashboardPage() {
         <h1 className="mt-10 text-4xl font-black">Admin Dashboard</h1>
 
         <div className="mt-8 grid gap-4 md:grid-cols-4">
-          <Link
-            href="/admin/recruiters"
-            className="rounded-3xl border border-green-500/30 bg-green-600/10 p-6 transition hover:bg-green-600/20"
-          >
+          <Link href="/admin/recruiters" className="rounded-3xl border border-green-500/30 bg-green-600/10 p-6 transition hover:bg-green-600/20">
             <h2 className="text-xl font-bold">Recruiter Verification ✅</h2>
-            <p className="mt-2 text-gray-400">
-              Approve or reject recruiter profiles.
-            </p>
+            <p className="mt-2 text-gray-400">Approve or reject recruiter profiles.</p>
           </Link>
 
-          <Link
-            href="/admin/jobs"
-            className="rounded-3xl border border-blue-500/30 bg-blue-600/10 p-6 transition hover:bg-blue-600/20"
-          >
+          <Link href="/admin/jobs" className="rounded-3xl border border-blue-500/30 bg-blue-600/10 p-6 transition hover:bg-blue-600/20">
             <h2 className="text-xl font-bold">Admin Jobs</h2>
-            <p className="mt-2 text-gray-400">
-              Approve, reject, add or delete jobs.
-            </p>
+            <p className="mt-2 text-gray-400">Approve, reject, add or delete jobs.</p>
           </Link>
 
-          <Link
-            href="/admin/chats"
-            className="rounded-3xl border border-purple-500/30 bg-purple-600/10 p-6 transition hover:bg-purple-600/20"
-          >
+          <Link href="/admin/chats" className="rounded-3xl border border-purple-500/30 bg-purple-600/10 p-6 transition hover:bg-purple-600/20">
             <h2 className="text-xl font-bold">Admin Chat View</h2>
-            <p className="mt-2 text-gray-400">
-              View platform messages for safety.
-            </p>
+            <p className="mt-2 text-gray-400">View platform messages for safety.</p>
           </Link>
 
-          <Link
-            href="/admin/feedback"
-            className="rounded-3xl border border-yellow-500/30 bg-yellow-600/10 p-6 transition hover:bg-yellow-600/20"
-          >
+          <Link href="/admin/feedback" className="rounded-3xl border border-yellow-500/30 bg-yellow-600/10 p-6 transition hover:bg-yellow-600/20">
             <h2 className="text-xl font-bold">Feedback</h2>
-            <p className="mt-2 text-gray-400">
-              Review platform feedback.
-            </p>
+            <p className="mt-2 text-gray-400">Review platform feedback.</p>
           </Link>
         </div>
 
@@ -242,10 +214,7 @@ export default function AdminDashboardPage() {
 
         <div className="mt-6 grid gap-4">
           {jobs.map((job) => (
-            <div
-              key={job.id}
-              className="rounded-3xl border border-white/10 bg-white/5 p-6"
-            >
+            <div key={job.id} className="rounded-3xl border border-white/10 bg-white/5 p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <h3 className="text-xl font-bold">{job.job_position}</h3>
@@ -277,24 +246,15 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => approveJob(job.id)}
-                    className="rounded-xl bg-green-600 px-4 py-2 font-bold"
-                  >
+                  <button onClick={() => approveJob(job.id)} className="rounded-xl bg-green-600 px-4 py-2 font-bold">
                     Approve
                   </button>
 
-                  <button
-                    onClick={() => rejectJob(job.id)}
-                    className="rounded-xl bg-yellow-500 px-4 py-2 font-bold text-black"
-                  >
+                  <button onClick={() => rejectJob(job.id)} className="rounded-xl bg-yellow-500 px-4 py-2 font-bold text-black">
                     Reject
                   </button>
 
-                  <button
-                    onClick={() => deleteJob(job.id)}
-                    className="rounded-xl bg-red-600 px-4 py-2 font-bold"
-                  >
+                  <button onClick={() => deleteJob(job.id)} className="rounded-xl bg-red-600 px-4 py-2 font-bold">
                     Delete
                   </button>
                 </div>
