@@ -9,7 +9,7 @@ export async function POST() {
     });
 
     const order = await razorpay.orders.create({
-      amount: 10000,
+      amount: 12300,
       currency: "INR",
       receipt: `employer_${Date.now()}`,
       notes: {
