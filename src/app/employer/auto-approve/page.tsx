@@ -62,18 +62,20 @@ export default function AutoApprovePage() {
       return;
     }
 
-    const orderRes = await fetch("/api/razorpay/create-order", {
+    const orderRes = await fetch("/api/razorpay/create-employer-order", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount: 100 }),
     });
 
     const order = await orderRes.json();
 
     if (!orderRes.ok || order.error) {
       alert(order.error || "Order create nahi hua");
+      setLoading(false);
+      return;
+    }
+
+    if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+      alert("NEXT_PUBLIC_RAZORPAY_KEY_ID missing hai");
       setLoading(false);
       return;
     }
@@ -160,7 +162,8 @@ export default function AutoApprovePage() {
           <h1 className="text-4xl font-black">Auto Approve Job 🚀</h1>
 
           <p className="mt-4 text-gray-300">
-            Pay ₹100 and your job will be instantly approved and visible to students.
+            Pay ₹100 and your job will be instantly approved and visible to
+            students.
           </p>
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 p-6">
@@ -169,6 +172,7 @@ export default function AutoApprovePage() {
           </div>
 
           <button
+            type="button"
             onClick={payAndApprove}
             disabled={loading}
             className="mt-8 w-full rounded-xl bg-green-600 py-4 font-bold hover:bg-green-700 disabled:opacity-60"
