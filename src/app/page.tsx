@@ -1,77 +1,171 @@
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const categories = [
-    "Part-Time Jobs",
-    "Full-Time Jobs",
-    "Internships",
-    "Freelancing",
-    "WFH Jobs",
-    "Nearby Jobs",
-    "Urgent Hiring",
-    "Daily Task Jobs",
+    ["Part-Time Jobs", "Flexible college-friendly shifts", "⚡"],
+    ["Full-Time Jobs", "Start your professional journey", "💼"],
+    ["Internships", "Learn, build, and grow faster", "🎓"],
+    ["Freelancing", "Earn with your skills", "🚀"],
+    ["WFH Jobs", "Remote work from anywhere", "🏠"],
+    ["Nearby Jobs", "Local opportunities around you", "📍"],
+    ["Urgent Hiring", "Quick joining roles", "🔥"],
+    ["Daily Task Jobs", "Short tasks. Fast income.", "✅"],
+  ];
+
+  const stats = [
+    ["10K+", "Active Jobs"],
+    ["5K+", "Students"],
+    ["1K+", "Employers"],
+    ["98%", "Smart Match"],
   ];
 
   return (
-    <main className="min-h-screen overflow-hidden bg-black text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#020617] text-white">
       <Navbar />
 
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,#1d4ed8_0%,transparent_35%),radial-gradient(circle_at_bottom_right,#7c3aed_0%,transparent_30%)] opacity-40" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-[-10%] top-[-10%] h-96 w-96 animate-pulse rounded-full bg-blue-600/30 blur-3xl" />
+        <div className="absolute right-[-8%] top-[12%] h-[28rem] w-[28rem] animate-pulse rounded-full bg-purple-600/25 blur-3xl" />
+        <div className="absolute bottom-[-15%] left-[35%] h-[30rem] w-[30rem] animate-pulse rounded-full bg-cyan-500/20 blur-3xl" />
 
-      <section className="mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-6 pt-28 text-center">
-        <div className="rounded-full border border-white/15 bg-white/5 px-5 py-2 text-sm text-gray-300 backdrop-blur">
-          Study. Work. Grow.
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(circle_at_center,black,transparent_75%)]" />
+      </div>
+
+      <section className="relative mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-6 pt-28 text-center">
+        <div className="soft-glow rounded-full border border-white/15 bg-white/10 px-5 py-2 text-sm font-bold text-blue-100 backdrop-blur-xl">
+          AI Powered Hiring Platform · Study. Work. Grow.
         </div>
 
-        <h1 className="mt-8 max-w-5xl text-5xl font-black md:text-7xl">
-          Your Career Starts{" "}
-          <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            Here.
-          </span>
+        <h1 className="mt-8 max-w-6xl text-5xl font-black leading-tight tracking-tight md:text-8xl">
+          Find Work Faster With{" "}
+          <span className="gradient-text">WorkMitra AI.</span>
         </h1>
 
-        <p className="mt-6 max-w-3xl text-lg text-gray-400">
-          Find part-time jobs, internships, freelancing work, work-from-home
-          opportunities, nearby jobs and daily task jobs with WorkMItra.
+        <p className="mt-6 max-w-3xl text-lg leading-8 text-gray-300 md:text-xl">
+          Students, freshers aur local workers ke liye AI job matching,
+          verified recruiters, instant chat, premium unlocks aur smart hiring
+          tools — sab ek powerful platform me.
         </p>
 
-        <div className="mt-10 flex gap-4">
-          <button className="rounded-2xl bg-blue-600 px-8 py-4 font-bold hover:bg-blue-700">
-            Find Jobs
-          </button>
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <Link href="/student/login" className="primary-btn">
+            Find Jobs Now
+          </Link>
 
-          <button className="rounded-2xl border border-white/10 px-8 py-4 font-bold hover:bg-white/10">
+          <Link
+            href="/employer/login"
+            className="rounded-2xl border border-white/15 bg-white/10 px-8 py-4 font-extrabold text-white backdrop-blur-xl hover:bg-white/15"
+          >
             Hire Talent
-          </button>
+          </Link>
+
+          <Link
+            href="/admin/login"
+            className="rounded-2xl border border-purple-400/30 bg-purple-600/10 px-8 py-4 font-extrabold text-purple-200 backdrop-blur-xl hover:bg-purple-600/20"
+          >
+            Admin Console
+          </Link>
+        </div>
+
+        <div className="relative mt-16 w-full max-w-6xl rounded-[2rem] border border-white/10 bg-white/[0.06] p-4 shadow-2xl shadow-blue-950/40 backdrop-blur-2xl md:p-6">
+          <div className="absolute -top-4 left-8 rounded-full border border-green-400/30 bg-green-500/15 px-4 py-2 text-xs font-bold text-green-300 backdrop-blur">
+            ● Live AI Matching
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-6 text-left">
+              <p className="text-sm font-bold text-blue-300">Student Match</p>
+              <h3 className="mt-3 text-4xl font-black">96%</h3>
+              <p className="mt-3 text-gray-400">
+                AI ranks jobs by skills, location and experience.
+              </p>
+              <div className="mt-6 h-3 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full w-[96%] rounded-full bg-gradient-to-r from-blue-500 to-cyan-400" />
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-6 text-left">
+              <p className="text-sm font-bold text-purple-300">
+                Employer Intelligence
+              </p>
+              <h3 className="mt-3 text-4xl font-black">Top 5</h3>
+              <p className="mt-3 text-gray-400">
+                Auto-shortlist candidates using smart score.
+              </p>
+              <div className="mt-6 grid grid-cols-5 gap-2">
+                {[90, 80, 72, 64, 56].map((height) => (
+                  <div
+                    key={height}
+                    className="rounded-full bg-gradient-to-t from-purple-600 to-blue-400"
+                    style={{ height: `${height}px` }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-6 text-left">
+              <p className="text-sm font-bold text-green-300">
+                Verified Hiring
+              </p>
+              <h3 className="mt-3 text-4xl font-black">Secure</h3>
+              <p className="mt-3 text-gray-400">
+                Admin approval, recruiter verification and safe chat monitoring.
+              </p>
+              <div className="mt-6 rounded-2xl border border-green-400/20 bg-green-500/10 p-4 text-green-300">
+                ✅ Trusted Platform Flow
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="mt-16 grid w-full max-w-6xl grid-cols-2 gap-4 md:grid-cols-4">
-          {categories.map((job) => (
-            <div
-              key={job}
-              className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur hover:bg-white/10"
-            >
-              <div className="mb-4 text-2xl">🚀</div>
-              <h3 className="font-bold">{job}</h3>
+          {stats.map(([number, label]) => (
+            <div key={label} className="premium-card rounded-3xl p-6">
+              <h3 className="text-4xl font-black text-blue-300">{number}</h3>
+              <p className="mt-2 text-gray-400">{label}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-16 grid w-full max-w-5xl grid-cols-2 gap-4 md:grid-cols-4">
-          {[
-            ["10K+", "Active Jobs"],
-            ["5K+", "Students"],
-            ["1K+", "Employers"],
-            ["98%", "Success Rate"],
-          ].map(([number, label]) => (
+        <div className="mt-16 grid w-full max-w-7xl grid-cols-1 gap-4 md:grid-cols-4">
+          {categories.map(([title, subtitle, icon]) => (
             <div
-              key={label}
-              className="rounded-3xl border border-white/10 bg-white/5 p-6"
+              key={title}
+              className="premium-card group rounded-3xl p-6 text-left"
             >
-              <h3 className="text-3xl font-black text-blue-400">{number}</h3>
-              <p className="mt-2 text-gray-400">{label}</p>
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-2xl group-hover:scale-110">
+                {icon}
+              </div>
+
+              <h3 className="text-lg font-black">{title}</h3>
+              <p className="mt-2 text-sm text-gray-400">{subtitle}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-16 mb-20 w-full max-w-5xl rounded-[2rem] border border-blue-400/20 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-cyan-600/20 p-8 backdrop-blur-2xl">
+          <h2 className="text-3xl font-black md:text-5xl">
+            Ready to build your career?
+          </h2>
+
+          <p className="mx-auto mt-4 max-w-2xl text-gray-300">
+            WorkMitra helps students find real work and helps recruiters hire
+            faster with AI.
+          </p>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link href="/student/signup" className="primary-btn">
+              Join as Student
+            </Link>
+
+            <Link
+              href="/employer/login"
+              className="rounded-2xl border border-white/15 bg-white/10 px-8 py-4 font-extrabold hover:bg-white/15"
+            >
+              Start Hiring
+            </Link>
+          </div>
         </div>
       </section>
     </main>
