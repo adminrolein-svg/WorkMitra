@@ -17,10 +17,40 @@ type Job = {
 };
 
 export default function AdminJobsPage() {
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [search, setSearch] = useState("");
 
-  async function loadJobs() {
+  async function checkAdminAndLoadJobs() {
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (!userData.user) {
+      alert("Please login first");
+      setLoading(false);
+      return;
+    }
+
+    const { data: adminData, error: adminError } = await supabase
+      .from("admins")
+      .select("*")
+      .eq("user_id", userData.user.id)
+      .maybeSingle();
+
+    if (adminError) {
+      alert(adminError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (!adminData) {
+      alert("You are not admin");
+      setLoading(false);
+      return;
+    }
+
+    setIsAdmin(true);
+
     const { data, error } = await supabase
       .from("jobs")
       .select(
@@ -30,14 +60,15 @@ export default function AdminJobsPage() {
 
     if (error) {
       alert(error.message);
-      return;
+    } else {
+      setJobs((data || []) as Job[]);
     }
 
-    setJobs((data || []) as Job[]);
+    setLoading(false);
   }
 
   useEffect(() => {
-    loadJobs();
+    checkAdminAndLoadJobs();
   }, []);
 
   async function approveJob(id: string) {
@@ -55,7 +86,7 @@ export default function AdminJobsPage() {
     }
 
     alert("Job approved");
-    loadJobs();
+    checkAdminAndLoadJobs();
   }
 
   async function rejectJob(id: string) {
@@ -73,7 +104,7 @@ export default function AdminJobsPage() {
     }
 
     alert("Job rejected");
-    loadJobs();
+    checkAdminAndLoadJobs();
   }
 
   async function deleteJob(id: string) {
@@ -88,7 +119,7 @@ export default function AdminJobsPage() {
     }
 
     alert("Job deleted");
-    loadJobs();
+    setJobs((prev) => prev.filter((job) => job.id !== id));
   }
 
   const filteredJobs = jobs.filter((job) =>
@@ -103,6 +134,26 @@ export default function AdminJobsPage() {
       .toLowerCase()
       .includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-black p-6 text-white">
+        Loading admin jobs...
+      </main>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <main className="min-h-screen bg-black p-6 text-white">
+        <h1 className="text-4xl font-black">Access Denied</h1>
+        <p className="mt-2 text-gray-400">Only admins can access this page.</p>
+        <Link href="/admin/dashboard" className="mt-6 inline-block text-blue-400">
+          Back to Admin Dashboard
+        </Link>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-black p-6 text-white">

@@ -28,11 +28,17 @@ export default function AdminChatsPage() {
         return;
       }
 
-      const { data: adminData } = await supabase
-        .from("admin_users")
-        .select("id")
-        .eq("id", userData.user.id)
+      const { data: adminData, error: adminError } = await supabase
+        .from("admins")
+        .select("*")
+        .eq("user_id", userData.user.id)
         .maybeSingle();
+
+      if (adminError) {
+        alert(adminError.message);
+        setLoading(false);
+        return;
+      }
 
       if (!adminData) {
         alert("You are not admin");
@@ -85,8 +91,8 @@ export default function AdminChatsPage() {
       <main className="min-h-screen bg-black p-6 text-white">
         <h1 className="text-4xl font-black">Access Denied</h1>
         <p className="mt-2 text-gray-400">Only admins can view chats.</p>
-        <Link href="/" className="mt-6 inline-block text-blue-400">
-          Go Home
+        <Link href="/admin/dashboard" className="mt-6 inline-block text-blue-400">
+          Back to Admin Dashboard
         </Link>
       </main>
     );
