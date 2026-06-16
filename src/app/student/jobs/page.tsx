@@ -194,10 +194,11 @@ export default function StudentJobsPage() {
       }
 
       const { data: jobsData, error: jobsError } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("status", "open")
-        .order("created_at", { ascending: false });
+  .from("jobs")
+  .select("*")
+  .eq("status", "open")
+  .eq("approval_status", "approved")
+  .order("created_at", { ascending: false });
 
       if (jobsError) {
         alert(jobsError.message);
