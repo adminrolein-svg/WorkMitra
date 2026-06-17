@@ -59,14 +59,8 @@ export default function Home() {
           >
             Hire Talent
           </Link>
-
-          <Link
-            href="/admin/login"
-            className="rounded-2xl border border-purple-400/30 bg-purple-600/10 px-8 py-4 font-extrabold text-purple-200 backdrop-blur-xl hover:bg-purple-600/20"
-          >
-            Admin Console
-          </Link>
         </div>
+          
 
         <div className="relative mt-16 w-full max-w-6xl rounded-[2rem] border border-white/10 bg-white/[0.06] p-4 shadow-2xl shadow-blue-950/40 backdrop-blur-2xl md:p-6">
           <div className="absolute -top-4 left-8 rounded-full border border-green-400/30 bg-green-500/15 px-4 py-2 text-xs font-bold text-green-300 backdrop-blur">
