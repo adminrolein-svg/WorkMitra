@@ -1,6 +1,70 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import CountUp from "react-countup";
+import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+
+type StatsData = {
+  jobs: number;
+  applicants: number;
+  accepted: number;
+  pending: number;
+};
 
 export default function EmployerDashboard() {
+  const [statsData, setStatsData] = useState<StatsData>({
+    jobs: 0,
+    applicants: 0,
+    accepted: 0,
+    pending: 0,
+  });
+
+  useEffect(() => {
+    async function loadStats() {
+      const { data: userData } = await supabase.auth.getUser();
+
+      if (!userData.user) return;
+
+      const { data: jobs } = await supabase
+        .from("jobs")
+        .select("id")
+        .eq("employer_id", userData.user.id);
+
+      const jobIds = jobs?.map((job) => job.id) || [];
+
+      let applications: any[] = [];
+
+      if (jobIds.length > 0) {
+        const { data } = await supabase
+          .from("applications")
+          .select("status, job_id")
+          .in("job_id", jobIds);
+
+        applications = data || [];
+      }
+
+      setStatsData({
+        jobs: jobIds.length,
+        applicants: applications.length,
+        accepted: applications.filter(
+          (app) =>
+            app.status === "Accepted" ||
+            app.status === "accepted"
+        ).length,
+        pending: applications.filter(
+          (app) =>
+            app.status === "Applied" ||
+            app.status === "pending" ||
+            app.status === "Pending"
+        ).length,
+      });
+    }
+
+    loadStats();
+  }, []);
+
   const cards = [
     {
       href: "/employer/post-job",
@@ -60,11 +124,18 @@ export default function EmployerDashboard() {
     },
   ];
 
-  const stats = [
-    ["Hiring Score", "92%", "text-cyan-300"],
-    ["Fast Shortlist", "Top 5", "text-purple-300"],
-    ["Auto Approval", "₹100", "text-green-300"],
-    ["Verified Flow", "Secure", "text-blue-300"],
+  const quickStats = [
+    ["Active Jobs", statsData.jobs, "", "text-cyan-300", "border-cyan-400/20 bg-cyan-500/10"],
+    ["Applicants", statsData.applicants, "", "text-purple-300", "border-purple-400/20 bg-purple-500/10"],
+    ["Accepted", statsData.accepted, "", "text-green-300", "border-green-400/20 bg-green-500/10"],
+    ["Pending", statsData.pending, "", "text-yellow-300", "border-yellow-400/20 bg-yellow-500/10"],
+  ];
+
+  const staticStats = [
+    ["Hiring Score", 92, "%", "text-cyan-300"],
+    ["Fast Shortlist", 5, " Top", "text-purple-300"],
+    ["Auto Approval", 100, " ₹", "text-green-300"],
+    ["Verified Flow", 100, "%", "text-blue-300"],
   ];
 
   return (
@@ -76,7 +147,12 @@ export default function EmployerDashboard() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(circle_at_center,black,transparent_75%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl">
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="relative mx-auto max-w-7xl"
+      >
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Link href="/" className="text-3xl font-black tracking-tight">
             Work<span className="text-blue-400">Mitra</span>
@@ -161,55 +237,91 @@ export default function EmployerDashboard() {
         </section>
 
         <div className="mt-8 grid gap-4 md:grid-cols-4">
-          {stats.map(([label, value, color]) => (
-            <div
-              key={label}
-              className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl transition hover:-translate-y-1 hover:border-purple-400/40 hover:bg-white/10"
+          {quickStats.map(([label, value, suffix, color, box]) => (
+            <motion.div
+              key={String(label)}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className={`rounded-3xl border ${box} p-6 backdrop-blur-xl`}
             >
-              <h2 className={`text-4xl font-black ${color}`}>{value}</h2>
-              <p className="mt-2 text-gray-400">{label}</p>
-            </div>
+              <h2 className={`text-4xl font-black ${color}`}>
+                <CountUp end={Number(value)} duration={2} separator="," />
+                {suffix}
+              </h2>
+              <p className="mt-2 text-gray-300">{label}</p>
+            </motion.div>
           ))}
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {cards.map((card) => (
-            <Link
-              key={card.href}
-              href={card.href}
-              className={`group relative overflow-hidden rounded-[1.7rem] border bg-gradient-to-br ${card.style} p-6 shadow-xl shadow-black/25 backdrop-blur-xl transition hover:-translate-y-2 hover:shadow-purple-950/40`}
+        <div className="mt-8 grid gap-4 md:grid-cols-4">
+          {staticStats.map(([label, value, suffix, color]) => (
+            <motion.div
+              key={String(label)}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl hover:border-purple-400/40 hover:bg-white/10"
             >
-              <div className="absolute right-[-2rem] top-[-2rem] h-24 w-24 rounded-full bg-white/10 blur-2xl transition group-hover:scale-150" />
+              <h2 className={`text-4xl font-black ${color}`}>
+                <CountUp end={Number(value)} duration={2} separator="," />
+                {suffix}
+              </h2>
+              <p className="mt-2 text-gray-400">{label}</p>
+            </motion.div>
+          ))}
+        </div>
 
-              <div className="relative">
-                <div className="flex items-center justify-between">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-3xl shadow-inner">
-                    {card.icon}
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.08 } },
+          }}
+          className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+        >
+          {cards.map((card) => (
+            <motion.div
+              key={card.href}
+              variants={{
+                hidden: { opacity: 0, y: 25 },
+                show: { opacity: 1, y: 0 },
+              }}
+              whileHover={{ y: -10, scale: 1.025 }}
+            >
+              <Link
+                href={card.href}
+                className={`group relative block h-full overflow-hidden rounded-[1.7rem] border bg-gradient-to-br ${card.style} p-6 shadow-xl shadow-black/25 backdrop-blur-xl hover:shadow-purple-950/40`}
+              >
+                <div className="absolute right-[-2rem] top-[-2rem] h-24 w-24 rounded-full bg-white/10 blur-2xl transition group-hover:scale-150" />
+
+                <div className="relative">
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-3xl shadow-inner">
+                      {card.icon}
+                    </div>
+
+                    <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs font-bold text-gray-200">
+                      {card.tag}
+                    </span>
                   </div>
 
-                  <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs font-bold text-gray-200">
-                    {card.tag}
-                  </span>
+                  <h2 className="mt-6 text-2xl font-black">{card.title}</h2>
+
+                  <p className="mt-2 min-h-12 text-sm leading-6 text-gray-300">
+                    {card.desc}
+                  </p>
+
+                  <div className="mt-6 flex items-center justify-between">
+                    <span className="text-sm font-bold text-purple-200">
+                      Open
+                    </span>
+                    <span className="rounded-full bg-white/10 px-3 py-2 transition group-hover:translate-x-1">
+                      →
+                    </span>
+                  </div>
                 </div>
-
-                <h2 className="mt-6 text-2xl font-black">{card.title}</h2>
-
-                <p className="mt-2 min-h-12 text-sm leading-6 text-gray-300">
-                  {card.desc}
-                </p>
-
-                <div className="mt-6 flex items-center justify-between">
-                  <span className="text-sm font-bold text-purple-200">
-                    Open
-                  </span>
-                  <span className="rounded-full bg-white/10 px-3 py-2 transition group-hover:translate-x-1">
-                    →
-                  </span>
-                </div>
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <section className="mt-10 rounded-[2rem] border border-white/10 bg-gradient-to-r from-purple-600/15 via-blue-600/15 to-cyan-600/15 p-8 backdrop-blur-xl">
           <div className="flex flex-wrap items-center justify-between gap-6">
@@ -230,7 +342,7 @@ export default function EmployerDashboard() {
             </Link>
           </div>
         </section>
-      </div>
+      </motion.div>
     </main>
   );
 }
