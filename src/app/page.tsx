@@ -161,6 +161,77 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        <footer className="w-full border-t border-white/10 py-16">
+  <div className="mx-auto max-w-7xl px-6">
+
+    <div className="grid gap-10 md:grid-cols-4">
+
+      <div>
+        <h3 className="text-3xl font-black">
+          Karrier<span className="text-blue-500">Hub</span>
+        </h3>
+
+        <p className="mt-4 text-gray-400">
+          AI-powered hiring platform helping students find jobs and employers hire faster.
+        </p>
+      </div>
+
+      <div>
+        <h4 className="mb-4 text-lg font-bold">
+          Company
+        </h4>
+
+        <div className="space-y-2">
+          <Link href="/about" className="block text-gray-400 hover:text-white">
+            About Us
+          </Link>
+
+          <Link href="/contact" className="block text-gray-400 hover:text-white">
+            Contact Us
+          </Link>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="mb-4 text-lg font-bold">
+          Legal
+        </h4>
+
+        <div className="space-y-2">
+          <Link href="/privacy-policy" className="block text-gray-400 hover:text-white">
+            Privacy Policy
+          </Link>
+
+          <Link href="/terms-and-conditions" className="block text-gray-400 hover:text-white">
+            Terms & Conditions
+          </Link>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="mb-4 text-lg font-bold">
+          Quick Links
+        </h4>
+
+        <div className="space-y-2">
+          <Link href="/student/signup" className="block text-gray-400 hover:text-white">
+            Student Signup
+          </Link>
+
+          <Link href="/employer/login" className="block text-gray-400 hover:text-white">
+            Employer Login
+          </Link>
+        </div>
+      </div>
+
+    </div>
+
+    <div className="mt-10 border-t border-white/10 pt-6 text-center text-gray-500">
+      © 2026 KarrierHub. All Rights Reserved.
+    </div>
+
+  </div>
+</footer>
       </section>
     </main>
   );
