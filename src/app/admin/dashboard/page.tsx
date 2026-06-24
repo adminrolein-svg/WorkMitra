@@ -246,7 +246,7 @@ export default function AdminDashboardPage() {
               <h1 className="mt-6 max-w-4xl text-5xl font-black leading-tight md:text-7xl">
                 Control The Entire{" "}
                 <span className="bg-gradient-to-r from-red-300 via-purple-300 to-blue-300 bg-clip-text text-transparent">
-                  WorkMitra System.
+                  KarrierHub System.
                 </span>
               </h1>
 

@@ -76,8 +76,8 @@ export default function UnlockPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: order.currency,
-        name: "WorkMitra",
-        description: "WorkMitra Plus Unlock",
+        name: "KarrierHub",
+        description: "KarrierHub Plus Unlock",
         order_id: order.id,
 
         handler: async function (response: any) {
@@ -109,7 +109,7 @@ export default function UnlockPage() {
             return;
           }
 
-          alert("Payment successful. WorkMitra Plus unlocked!");
+          alert("Payment successful. KarrierHub Plus unlocked!");
           router.push("/student/dashboard");
         },
 
@@ -150,7 +150,7 @@ export default function UnlockPage() {
         </Link>
 
         <div className="mt-10 rounded-3xl border border-yellow-500/30 bg-yellow-600/10 p-8">
-          <h1 className="text-4xl font-black">Unlock WorkMitra Plus 🔓</h1>
+          <h1 className="text-4xl font-black">Unlock KarrierHub Plus 🔓</h1>
 
           <p className="mt-4 text-gray-300">
             Pay ₹50 to unlock recruiter chat, full job details, exact address,

@@ -11,9 +11,9 @@ export async function POST() {
     const order = await razorpay.orders.create({
       amount: 5000,
       currency: "INR",
-      receipt: `workmitra_${Date.now()}`,
+      receipt: `KarrierHub_${Date.now()}`,
       notes: {
-        product: "WorkMitra Plus Unlock",
+        product: "KarrierHub Plus Unlock",
       },
     });
 

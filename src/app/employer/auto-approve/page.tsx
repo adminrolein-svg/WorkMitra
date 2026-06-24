@@ -84,7 +84,7 @@ export default function AutoApprovePage() {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: order.currency,
-      name: "WorkMitra",
+      name: "KarrierHub",
       description: "Job Auto Approval ₹100",
       order_id: order.id,
 

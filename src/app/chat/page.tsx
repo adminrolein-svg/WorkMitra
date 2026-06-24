@@ -136,7 +136,7 @@ export default function ChatPage() {
             <h1 className="text-4xl font-black">Chat Locked 🔒</h1>
 
             <p className="mt-4 text-gray-300">
-              Recruiter se chat karne ke liye WorkMitra Plus unlock karo.
+              Recruiter se chat karne ke liye KarrierHub Plus unlock karo.
             </p>
 
             <Link

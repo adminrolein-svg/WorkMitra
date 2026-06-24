@@ -11,7 +11,7 @@ export default function AdminPostJobPage() {
 
   const [form, setForm] = useState({
     job_position: "",
-    employer_name: "WorkMitra",
+    employer_name: "KarrierHub",
     contact_number: "",
     job_location: "",
     salary: "",
@@ -52,7 +52,7 @@ export default function AdminPostJobPage() {
 
     const { error } = await supabase.from("jobs").insert({
       job_position: form.job_position,
-      employer_name: form.employer_name || "WorkMitra",
+      employer_name: form.employer_name || "KarrierHub",
       contact_number: form.contact_number,
       job_location: form.job_location,
       salary: form.salary,
@@ -86,7 +86,7 @@ export default function AdminPostJobPage() {
         <h1 className="mt-8 text-4xl font-black">Post Platform Job</h1>
 
         <p className="mt-2 text-gray-400">
-          Ye job WorkMitra platform job ke naam se post hogi.
+          Ye job KarrierHub platform job ke naam se post hogi.
         </p>
 
         <form onSubmit={handlePostJob} className="mt-8 space-y-4">

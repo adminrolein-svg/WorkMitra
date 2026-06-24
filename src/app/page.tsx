@@ -39,7 +39,7 @@ export default function Home() {
 
         <h1 className="mt-8 max-w-6xl text-5xl font-black leading-tight tracking-tight md:text-8xl">
           Find Work Faster With{" "}
-          <span className="gradient-text">WorkMitra AI.</span>
+          <span className="gradient-text">KarrierHub AI.</span>
         </h1>
 
         <p className="mt-6 max-w-3xl text-lg leading-8 text-gray-300 md:text-xl">
@@ -144,7 +144,7 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-gray-300">
-            WorkMitra helps students find real work and helps recruiters hire
+            KarrierHub helps students find real work and helps recruiters hire
             faster with AI.
           </p>
 
