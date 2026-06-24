@@ -121,8 +121,8 @@ export default function ContactPage() {
               </button>
 
               <p className="text-center text-sm text-gray-500">
-                Form backend baad mein connect karenge. Abhi premium UI ready hai.
-              </p>
+  Trusted by students, recruiters and growing businesses across India.
+</p>
             </form>
           </div>
         </div>
